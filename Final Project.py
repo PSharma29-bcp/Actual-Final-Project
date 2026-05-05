@@ -17,7 +17,7 @@ TABLE_HEIGHT = 300
 BALL_RADIUS = 12
 HOLE_RADIUS = 15
 
-FPS = 30 # Frames per second (used with clock)
+FPS = 120 # Frames per second (used with clock)
 
 # RGB Values of screen objects
 BG_COLOR = (0,0,0)
@@ -45,6 +45,7 @@ pygame.display.set_caption("Pool")
 
 def main(): # The game loop
     running = True
+    shot = False
     turn = 1
     clicks = 0
 
@@ -74,6 +75,10 @@ def main(): # The game loop
     # Where the cue ball is placed
     cue_ball = Ball(BALL_RADIUS, 448, 200, (255,255,255), 0,0,3)
 
+    balls = [yellow_striped, blue_striped, red_striped, purple_striped, orange_striped, green_striped,
+            maroon_striped, yellow_solid, blue_solid, red_solid, purple_solid, orange_solid, green_solid,
+            maroon_solid, eight_ball, cue_ball]
+
     while running:
         screen.fill(BG_COLOR)
         
@@ -88,72 +93,59 @@ def main(): # The game loop
         bottom_right_hole = Ball(HOLE_RADIUS, 625, 325, HOLE_COLOR, 0, 0, 0)
         bottom_right_hole.display(screen)
 
-        yellow_striped.display(screen)
-        blue_striped.display(screen)
-        red_striped.display(screen)
-        purple_striped.display(screen)
-        orange_striped.display(screen)
-        green_striped.display(screen)
-        maroon_striped.display(screen)
+        for ball in balls:
+            ball.move()
 
-        yellow_solid.display(screen)
-        blue_solid.display(screen)
-        red_solid.display(screen)
-        purple_solid.display(screen)
-        orange_solid.display(screen)
-        green_solid.display(screen)
-        maroon_solid.display(screen)
+        for i in range(len(balls)):
+            for j in range(i+1, len(balls)):
+                balls[i].collide(balls[j])
 
-        eight_ball.display(screen)
-        cue_ball.display(screen)
+        for ball in balls:
+            ball.display(screen)
 
 
         mx, my = pygame.mouse.get_pos()
-        distance_x = mx - cue_ball.x
-        distance_y = my - cue_ball.y
 
-        distance_squared = distance_x * distance_x + distance_y * distance_y
+        dir_x = mx - cue_ball.x
+        dir_y = my - cue_ball.y
+
+        distance_squared = dir_x * dir_x + dir_y * dir_y
 
         if distance_squared <= 0:
             total_distance = 1
         else:
             total_distance = math.sqrt(distance_squared)
 
-        distance_x = distance_x / total_distance
-        distance_y = distance_y / total_distance
-
-        starting_x = cue_ball.x + distance_x * 20
-        starting_y = cue_ball.y + distance_y * 20
-
-        stick_length = 120
-        ending_x = starting_x + distance_x * stick_length
-        ending_y = starting_y + distance_y * stick_length
-
-        cue_stick = pygame.draw.line(screen, STICK_COLOR, (starting_x, starting_y),
-                                    (ending_x, ending_y), width = 10)
-        # Cue stick is moved by the mouse's position and angle to the cue ball
-        run = ending_x - starting_x
-        rise = ending_y - starting_y
+        dir_x = dir_x / total_distance
+        dir_y = dir_y / total_distance
 
 
+        if cue_ball.dx == 0 and cue_ball.dy == 0:
+            starting_x = cue_ball.x + dir_x * 20
+            starting_y = cue_ball.y + dir_y * 20
 
+            stick_length = 120
+            ending_x = starting_x + dir_x * stick_length
+            ending_y = starting_y + dir_y * stick_length
 
+            cue_stick = pygame.draw.line(screen, STICK_COLOR, (starting_x, starting_y),
+                                        (ending_x, ending_y), width = 10)
+            # Cue stick is moved by the mouse's position and angle to the cue ball
 
-
-        # The menu for controlling the cue stick
-        stick_strength_menu = pygame.draw.rect(screen, (255,255,255), (5,50,35, TABLE_HEIGHT))
-        if 20 * clicks > 300:
-            clicks = 15
-        elif clicks < 0:
-            clicks = 0
-        else:
-            stick_strength_bar = pygame.draw.rect(screen, (255, 0, 0), (5,50,35, (20*clicks)))
-        font = pygame.font.SysFont("Arial", 22)
-        text_surface = font.render(("MIN"), True, (255,255,255))
-        screen.blit(text_surface, (5,20))
-        text_surface = font.render(("MAX"), True, (255,255,255))
-        screen.blit(text_surface, (5,350))
-        # Bar will be controlled by up and down arrow keys
+            # The menu for controlling the cue stick
+            stick_strength_menu = pygame.draw.rect(screen, (255,255,255), (5,50,35, TABLE_HEIGHT))
+            if 20 * clicks > 300:
+                clicks = 15
+            elif clicks < 0:
+                clicks = 0
+            else:
+                stick_strength_bar = pygame.draw.rect(screen, (255, 0, 0), (5,50,35, (20*clicks)))
+            font = pygame.font.SysFont("Arial", 22)
+            text_surface = font.render(("MIN"), True, (255,255,255))
+            screen.blit(text_surface, (5,20))
+            text_surface = font.render(("MAX"), True, (255,255,255))
+            screen.blit(text_surface, (5,350))
+            # Bar will be controlled by up and down arrow keys
 
 
 
@@ -173,8 +165,10 @@ def main(): # The game loop
                     clicks -= 1
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                for i in range(clicks):
-                    cue_ball.move(-run, -rise, clicks/6)
+                if cue_ball.dx == 0 and cue_ball.dy == 0:
+                    cue_ball.shoot(-dir_x, -dir_y, clicks)
+
+                
             if event.type == pygame.MOUSEBUTTONUP:
                 pass
 
