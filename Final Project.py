@@ -120,7 +120,7 @@ def main(): # The game loop
         dir_y = dir_y / total_distance
 
 
-        if cue_ball.dx == 0 and cue_ball.dy == 0:
+        if cue_ball.dx == 0 or cue_ball.dy == 0 or cue_ball.dx != 0 or cue_ball.dy != 0:
             starting_x = cue_ball.x + dir_x * 20
             starting_y = cue_ball.y + dir_y * 20
 
@@ -165,7 +165,7 @@ def main(): # The game loop
                     clicks -= 1
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if cue_ball.dx == 0 and cue_ball.dy == 0:
+                if cue_ball.dx == 0 or cue_ball.dy == 0 or cue_ball.dx != 0 or cue_ball.dy != 0:
                     cue_ball.shoot(-dir_x, -dir_y, clicks)
 
                 

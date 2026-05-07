@@ -2,7 +2,7 @@ import pygame
 import math
 
 colors = [(255,251,0), (0,47,255), (255,0,0), (152, 0, 255), (255,136,0), (36, 194, 36), (115,1,1)]
-balls = []
+outs = []
 # Yellow, Blue, Red, Purple, Orange, Green, Maroon
 
 class Ball:
@@ -20,6 +20,13 @@ class Ball:
         self.y = 200
         self.dx = 0
         self.dy = 0
+
+    def out(self):
+        outs.append((self.type, self.color))
+        self.x = ((len(outs) + 1) * 10)
+        self.y = 10
+        self.dx = 0
+        self.dy
     
     def display(self, screen):
 
@@ -76,15 +83,23 @@ class Ball:
         if abs(self.dy) < 0.05:
             self.dy = 0
 
-        if self.in_hole(75,75):
+        if self.in_hole(75,75) and self.type == 3:
             self.reset()
-        if self.in_hole(625,75):
+        if self.in_hole(625,75) and self.type == 3:
             self.reset()
-        if self.in_hole(75,325):
+        if self.in_hole(75,325) and self.type == 3:
             self.reset()
-        if self.in_hole(625,325):
+        if self.in_hole(625,325) and self.type == 3:
             self.reset()
 
+        if self.in_hole(75,75) and (self.type == 1 or self.type == 2 or self.type == 8):
+            self.out()
+        if self.in_hole(625,75) and (self.type == 1 or self.type == 2 or self.type == 8):
+            self.out()
+        if self.in_hole(75,325) and (self.type == 1 or self.type == 2 or self.type == 8):
+            self.out()
+        if self.in_hole(625,325) and (self.type == 1 or self.type == 2 or self.type == 8):
+            self.out()
 
         if self.y < 70 + self.radius:
             self.y = 70 + self.radius
@@ -117,7 +132,7 @@ class Ball:
         if distance == 0:
             return
         
-        if distance < self.radius + other.radius - 0.5:
+        if distance < self.radius + other.radius:
             nx = dx/distance
             ny = dy/distance
 
@@ -128,13 +143,6 @@ class Ball:
             other.x += nx * overlap/2
             other.y += ny * overlap/2
 
-            seperation = (self.radius + other.radius) - distance
-            if seperation > 0:
-                self.x -= nx * seperation * 0.5
-                self.y -= ny * seperation * 0.5
-                other.x += nx * seperation * 0.5
-                other.y += ny * seperation * 0.5
-
             dvx = self.dx - other.dx
             dvy = self.dy - other.dy
 
@@ -144,10 +152,12 @@ class Ball:
             if dot > 0:
                 return
             
-            self.dx -= dot * nx
-            self.dy -= dot * ny
-            other.dx += dot * nx
-            other.dy += dot * ny
+            impulse = dot
+            
+            self.dx -= impulse * nx
+            self.dy -= impulse * ny
+            other.dx += impulse * nx
+            other.dy += impulse * ny
 
             other.dx *= 0.99
             other.dy *= 0.99
