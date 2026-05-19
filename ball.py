@@ -2,7 +2,7 @@ import pygame
 import math
 
 colors = [(255,251,0), (0,47,255), (255,0,0), (152, 0, 255), (255,136,0), (36, 194, 36), (115,1,1)]
-outs = []
+outs = [0, ]
 # Yellow, Blue, Red, Purple, Orange, Green, Maroon
 
 class Ball:
@@ -14,6 +14,7 @@ class Ball:
         self.dx = dx
         self.dy = dy
         self.type = type
+        self.pocketed = False
 
     def reset(self):
         self.x = 448
@@ -22,11 +23,19 @@ class Ball:
         self.dy = 0
 
     def out(self):
+        if self.pocketed:
+            return False
+        
+        self.pocketed = True
         outs.append((self.type, self.color))
-        self.x = ((len(outs) + 1) * 10)
-        self.y = 10
+        self.x = 20 + len(outs) * 30
+        self.y = 20
+
         self.dx = 0
-        self.dy
+        self.dy = 0
+        return True
+        
+
     
     def display(self, screen):
 
@@ -72,6 +81,9 @@ class Ball:
         self.dy = dy * strength
 
     def move(self):
+        if self.pocketed:
+            return
+        
         self.x += self.dx
         self.y += self.dy
 
@@ -83,23 +95,14 @@ class Ball:
         if abs(self.dy) < 0.05:
             self.dy = 0
 
-        if self.in_hole(75,75) and self.type == 3:
-            self.reset()
-        if self.in_hole(625,75) and self.type == 3:
-            self.reset()
-        if self.in_hole(75,325) and self.type == 3:
-            self.reset()
-        if self.in_hole(625,325) and self.type == 3:
-            self.reset()
+        holes = [(75,75), (625,75), (75,325), (625,325)]
 
-        if self.in_hole(75,75) and (self.type == 1 or self.type == 2 or self.type == 8):
-            self.out()
-        if self.in_hole(625,75) and (self.type == 1 or self.type == 2 or self.type == 8):
-            self.out()
-        if self.in_hole(75,325) and (self.type == 1 or self.type == 2 or self.type == 8):
-            self.out()
-        if self.in_hole(625,325) and (self.type == 1 or self.type == 2 or self.type == 8):
-            self.out()
+        for hx, hy in holes:
+            if self.in_hole(hx, hy):
+                if self.type == 3:
+                    self.reset()
+                else:
+                    self.out()
 
         if self.y < 70 + self.radius:
             self.y = 70 + self.radius
@@ -121,7 +124,7 @@ class Ball:
 
     def in_hole(self, hole_x, hole_y):
         distance = math.sqrt((self.x - hole_x)**2 + (self.y - hole_y)**2)
-        return distance < 15 # 15 is hole radius
+        return distance < 20 # 20 is hole radius
     
     def collide(self, other):
         dx = other.x - self.x

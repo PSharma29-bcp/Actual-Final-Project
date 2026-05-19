@@ -1,4 +1,3 @@
-
 Description of Project:
 This project is a coded game of Pool which is played with fifteen balls (seven striped, seven solids, one 8-ball, and one white ball with a red dot on it used to hit the other balls) and a cue, which is a long stick that used to hit the balls. There are two people who play in a normal game, and each person must hit either a solid or striped ball. The game is set up with all of the balls except for the white one being put in a triangle formation in the center of the table, and one played must hit the white ball. The first player to hit a ball in must continue hitting that type of ball. For example, if you hit a solid ball and that’s the first ball to be hit out, you must hit solids for the rest of the game and your opponent must hit stripes. The goal of the game is to hit out all of your balls (the type you were assigned) and the 8-ball, but the 8-ball must be hit last, unless you’ll lose the game if you were the one to hit it. You also cannot directly hit the opponent’s ball, unless you hit your own ball and it hit the opponent’s ball.
 
@@ -12,7 +11,7 @@ The features that will be included is a menu at the beginning for the players to
 
 
 Features it must include:
-4. What features MUST it include?  Include a version plan like the one shown in the Khan Academy document. 
+What features MUST it include?  Include a version plan like the one shown in the Khan Academy document. 
 The features it must include are sound effects for when balls are hit or if they hit the wall. It must also include a collection of the balls that have been hit out at the top for players to keep track of.
 P1:
 •	Friction for all of the balls to make them slow down over time
